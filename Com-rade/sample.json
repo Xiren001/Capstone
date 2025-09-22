@@ -1,0 +1,16 @@
+{
+    "type": "offer",
+    "sdp": "v=0\\no=- 46117343 2 IN IP4 127.0.0.1\\ns=-\\nt=0 0...",
+    "iceCandidates": [
+        {
+            "candidate": "candidate:842163049 1 udp 1686052607 192.168.1.10 50920 typ srflx",
+            "sdpMid": "0",
+            "sdpMLineIndex": 0
+        }
+    ],
+    "sessionInfo": {
+        "deviceId": "device-XR12",
+        "userId": "unit.lead.03",
+        "timestamp": "2025-08-05T10:45:00Z"
+    }
+}
