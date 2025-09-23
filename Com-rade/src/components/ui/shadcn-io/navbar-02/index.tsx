@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BookOpenIcon, InfoIcon, LifeBuoyIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -173,7 +173,7 @@ export const Navbar02 = React.forwardRef<HTMLElement, Navbar02Props>(
       signInText = "Sign In",
       signInHref = "#signin",
       ctaText = "Secure Access",
-      ctaHref = "#get-started",
+      ctaHref = "/login",
       onSignInClick,
       onCtaClick,
       ...props
@@ -182,6 +182,7 @@ export const Navbar02 = React.forwardRef<HTMLElement, Navbar02Props>(
   ) => {
     const [isMobile, setIsMobile] = useState(false);
     const containerRef = useRef<HTMLElement>(null);
+    const navigate = useNavigate();
     useEffect(() => {
       const checkWidth = () => {
         if (containerRef.current) {
@@ -295,6 +296,7 @@ export const Navbar02 = React.forwardRef<HTMLElement, Navbar02Props>(
                           className="w-full text-sm font-medium px-4 h-9 rounded-md shadow-sm"
                           onClick={(e) => {
                             e.preventDefault();
+                            navigate(ctaHref);
                             if (onCtaClick) onCtaClick();
                           }}
                         >
@@ -427,6 +429,7 @@ export const Navbar02 = React.forwardRef<HTMLElement, Navbar02Props>(
                   className="text-sm font-medium px-4 h-9 rounded-md shadow-sm"
                   onClick={(e) => {
                     e.preventDefault();
+                    navigate(ctaHref);
                     if (onCtaClick) onCtaClick();
                   }}
                 >

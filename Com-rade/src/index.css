@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
-
 @custom-variant dark (&:is(.dark *));
 /* CSS Reset
  * ========================================================================== */
@@ -611,6 +609,4 @@ template {
     opacity: 1;
   }
 }
-
-
 
