@@ -13,9 +13,9 @@ import GettingStarted from "./LandingPage/pages/getting-started.tsx";
 import Tutorials from "./LandingPage/pages/tutorials.tsx";
 import AboutUs from "./LandingPage/pages/about-us.tsx";
 import Login from "./LandingPage/pages/login.tsx";
-import { AuthProvider } from "./contexts/AuthContext";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { SidebarDashboard } from "./components/SidebarDashboard";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
+import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
+import { SidebarDashboard } from "./components/SidebarDashboard.tsx";
 
 function App() {
   return (
