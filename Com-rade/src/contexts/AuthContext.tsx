@@ -7,6 +7,8 @@ import React, {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/lib/api";
+import { TokenExpiredModal } from "@/components/TokenExpiredModal";
+import { eventEmitter, EVENTS } from "@/lib/events";
 
 interface User {
   id: number;
@@ -19,6 +21,8 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
+  showTokenExpiredModal: boolean;
+  setShowTokenExpiredModal: (show: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,6 +42,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showTokenExpiredModal, setShowTokenExpiredModal] = useState(false);
   const navigate = useNavigate();
 
   const isAuthenticated = !!user;
@@ -54,6 +59,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Token is invalid, remove it
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
+          setUser(null);
         }
       }
       setIsLoading(false);
@@ -61,6 +67,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     checkAuth();
   }, []);
+
+  // Listen for token expiration events from API interceptor
+  useEffect(() => {
+    const handleTokenExpired = () => {
+      setShowTokenExpiredModal(true);
+    };
+
+    eventEmitter.on(EVENTS.TOKEN_EXPIRED, handleTokenExpired);
+
+    return () => {
+      eventEmitter.off(EVENTS.TOKEN_EXPIRED, handleTokenExpired);
+    };
+  }, []);
+
+  // Periodic token expiration check
+  useEffect(() => {
+    if (!user) return;
+
+    const checkTokenExpiration = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (!accessToken || !refreshToken) {
+        setShowTokenExpiredModal(true);
+        return;
+      }
+
+      try {
+        // Try to get user profile to test if tokens are still valid
+        await api.get("/auth/profile");
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          setShowTokenExpiredModal(true);
+        }
+      }
+    };
+
+    // Check every 30 seconds
+    const interval = setInterval(checkTokenExpiration, 30000);
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   const login = async (username: string, password: string) => {
     try {
@@ -88,6 +136,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setUser(null);
+    setShowTokenExpiredModal(false);
+    navigate("/");
+  };
+
+  const handleTokenExpiredLogin = () => {
+    setShowTokenExpiredModal(false);
     navigate("/");
   };
 
@@ -97,7 +151,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     isLoading,
     isAuthenticated,
+    showTokenExpiredModal,
+    setShowTokenExpiredModal,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      <TokenExpiredModal
+        isOpen={showTokenExpiredModal}
+        onLogin={handleTokenExpiredLogin}
+      />
+    </AuthContext.Provider>
+  );
 };

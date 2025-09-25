@@ -1,8 +1,9 @@
 import axios from "axios";
+import { eventEmitter, EVENTS } from "./events";
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -54,10 +55,10 @@ api.interceptors.response.use(
           return api(originalRequest);
         }
       } catch (refreshError) {
-        // Refresh failed, redirect to home
+        // Refresh failed, emit event for AuthContext to handle
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        window.location.href = "/";
+        eventEmitter.emit(EVENTS.TOKEN_EXPIRED);
         return Promise.reject(refreshError);
       }
     }
