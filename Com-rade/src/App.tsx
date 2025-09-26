@@ -12,27 +12,54 @@ import Infra from "./LandingPage/pages/infra.tsx";
 import GettingStarted from "./LandingPage/pages/getting-started.tsx";
 import Tutorials from "./LandingPage/pages/tutorials.tsx";
 import AboutUs from "./LandingPage/pages/about-us.tsx";
+import Login from "./LandingPage/pages/login.tsx";
+import { AuthProvider } from "./contexts/AuthContext.tsx";
+import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
+import { SidebarDashboard } from "./components/SidebarDashboard.tsx";
 
 function App() {
   return (
-    <div className="relative w-full">
-      <div className="absolute inset-0 w-full h-full border-x container mx-auto"></div>
-      <Header />
+    <AuthProvider>
       <Routes>
-        <Route path="/" element={<Body />} />
-        <Route path="/overview" element={<Overview />} />
-        <Route path="/objectives" element={<Objectives />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="/frontend" element={<Frontend />} />
-        <Route path="/backend" element={<Backend />} />
-        <Route path="/security" element={<Security />} />
-        <Route path="/infra" element={<Infra />} />
-        <Route path="/getting-started" element={<GettingStarted />} />
-        <Route path="/tutorials" element={<Tutorials />} />
-        <Route path="/about-us" element={<AboutUs />} />
+        {/* Login page - standalone without header/footer */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Dashboard - standalone without header/footer */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <SidebarDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* All other pages with header and footer */}
+        <Route
+          path="/*"
+          element={
+            <div className="relative w-full">
+              <div className="absolute inset-0 w-full h-full border-x container mx-auto"></div>
+              <Header />
+              <Routes>
+                <Route path="/" element={<Body />} />
+                <Route path="/overview" element={<Overview />} />
+                <Route path="/objectives" element={<Objectives />} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/frontend" element={<Frontend />} />
+                <Route path="/backend" element={<Backend />} />
+                <Route path="/security" element={<Security />} />
+                <Route path="/infra" element={<Infra />} />
+                <Route path="/getting-started" element={<GettingStarted />} />
+                <Route path="/tutorials" element={<Tutorials />} />
+                <Route path="/about-us" element={<AboutUs />} />
+              </Routes>
+              <Footer />
+            </div>
+          }
+        />
       </Routes>
-      <Footer />
-    </div>
+    </AuthProvider>
   );
 }
 
