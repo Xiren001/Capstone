@@ -3,7 +3,7 @@ import { eventEmitter, EVENTS } from "./events";
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -39,7 +39,7 @@ api.interceptors.response.use(
         if (refreshToken) {
           const response = await axios.post(
             `${
-              import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api"
+              import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"
             }/auth/refresh`,
             {
               refreshToken,

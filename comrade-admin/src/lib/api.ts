@@ -39,7 +39,7 @@ api.interceptors.response.use(
         if (refreshToken) {
           const response = await axios.post(
             `${
-              import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api"
+              import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api"
             }/auth/refresh`,
             {
               refreshToken,
