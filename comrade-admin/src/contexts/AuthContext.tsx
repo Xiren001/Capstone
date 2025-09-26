@@ -13,6 +13,7 @@ import { eventEmitter, EVENTS } from "@/lib/events";
 interface User {
   id: number;
   username: string;
+  role: string;
 }
 
 interface AuthContextType {
@@ -83,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Periodic token expiration check
   useEffect(() => {
-    if (!user) return;
+    if (!user || showTokenExpiredModal) return;
 
     const checkTokenExpiration = async () => {
       const accessToken = localStorage.getItem("accessToken");
@@ -108,13 +109,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const interval = setInterval(checkTokenExpiration, 30000);
 
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, showTokenExpiredModal]);
 
   const login = async (username: string, password: string) => {
     try {
       const response = await api.post("/auth/signin", {
         username,
         password,
+        platform: "admin", // Specify platform for role-based access
       });
 
       const { accessToken, refreshToken } = response.data;
@@ -145,6 +147,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     navigate("/admin/login");
   };
 
+  const handleTokenExpiredClose = () => {
+    setShowTokenExpiredModal(false);
+    // Clear tokens and logout user to prevent re-triggering
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setUser(null);
+    navigate("/admin/login");
+  };
+
   const value: AuthContextType = {
     user,
     login,
@@ -161,6 +172,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       <TokenExpiredModal
         isOpen={showTokenExpiredModal}
         onLogin={handleTokenExpiredLogin}
+        onClose={handleTokenExpiredClose}
       />
     </AuthContext.Provider>
   );

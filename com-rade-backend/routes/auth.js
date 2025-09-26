@@ -42,15 +42,28 @@ router.post("/signup", passwordValidationMiddleware, async (req, res) => {
 
 router.post("/signin", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, platform } = req.body; // platform: 'web' or 'admin'
     const user = await User.findOne({ where: { username } });
     if (!user || !(await comparePassword(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Role-based access control
+    const allowedRoles = {
+      web: ["SYSTEM_ADMIN", "FIELD_COMMANDER", "UNIT_COMMANDER"], // Com-rade web app
+      admin: ["SYSTEM_ADMIN", "FIELD_COMMANDER"], // Admin panel
+      mobile: ["SYSTEM_ADMIN", "FIELD_COMMANDER", "UNIT_COMMANDER", "SOLDIER"], // Mobile app
+    };
+
+    if (platform && !allowedRoles[platform]?.includes(user.role)) {
+      return res.status(403).json({
+        message: `Access denied. Role '${user.role}' is not allowed for ${platform} platform.`,
+      });
+    }
+
     // Create access token (short-lived)
     const accessToken = jwt.sign(
-      { id: user.id, type: "access" },
+      { id: user.id, username: user.username, role: user.role, type: "access" },
       process.env.JWT_SECRET,
       {
         expiresIn: "15m", // 15 minutes for security
@@ -59,10 +72,15 @@ router.post("/signin", async (req, res) => {
 
     // Create refresh token (long-lived)
     const refreshToken = jwt.sign(
-      { id: user.id, type: "refresh" },
+      {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        type: "refresh",
+      },
       process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
       {
-        expiresIn: "7d", // 7 days
+        expiresIn: "1d", // 1 day
       }
     );
 
@@ -83,7 +101,11 @@ router.get(
   "/profile",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    res.json({ id: req.user.id, username: req.user.username });
+    res.json({
+      id: req.user.id,
+      username: req.user.username,
+      role: req.user.role,
+    });
   }
 );
 
@@ -114,7 +136,7 @@ router.post("/refresh", async (req, res) => {
 
     // Create new access token
     const accessToken = jwt.sign(
-      { id: user.id, type: "access" },
+      { id: user.id, username: user.username, role: user.role, type: "access" },
       process.env.JWT_SECRET,
       {
         expiresIn: "15m",
@@ -123,10 +145,15 @@ router.post("/refresh", async (req, res) => {
 
     // Optionally create new refresh token (token rotation for enhanced security)
     const newRefreshToken = jwt.sign(
-      { id: user.id, type: "refresh" },
+      {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        type: "refresh",
+      },
       process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
       {
-        expiresIn: "15m",
+        expiresIn: "1d", // Keep refresh token valid for 1 day
       }
     );
 

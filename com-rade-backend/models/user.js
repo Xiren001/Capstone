@@ -4,6 +4,16 @@ export default (sequelize, DataTypes) => {
     {
       username: DataTypes.STRING,
       password: DataTypes.STRING,
+      role: {
+        type: DataTypes.ENUM(
+          "SYSTEM_ADMIN",
+          "FIELD_COMMANDER",
+          "UNIT_COMMANDER",
+          "SOLDIER"
+        ),
+        allowNull: false,
+        defaultValue: "SOLDIER",
+      },
     },
     {
       tableName: "users", // Specify the correct table name
