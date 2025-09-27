@@ -86,11 +86,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, [user]);
 
-  // Periodic token expiration check
+  // Periodic token expiration check - optimized to reduce unnecessary API calls
   useEffect(() => {
     if (!user || showTokenExpiredModal) return;
 
     const checkTokenExpiration = async () => {
+      // Only check if the page is visible (user is actively using the app)
+      if (document.hidden) return;
+
       const accessToken = localStorage.getItem("accessToken");
       const refreshToken = localStorage.getItem("refreshToken");
 
@@ -100,19 +103,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       try {
-        // Try to get user profile to test if tokens are still valid
-        await api.get("/auth/profile");
+        // Decode JWT to check expiration without making API call
+        const tokenParts = accessToken.split(".");
+        if (tokenParts.length !== 3) {
+          throw new Error("Invalid token format");
+        }
+
+        const tokenPayload = JSON.parse(atob(tokenParts[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        // If token is expired or expires in less than 5 minutes, check with server
+        if (tokenPayload.exp && tokenPayload.exp - currentTime < 300) {
+          await api.get("/auth/profile");
+        }
       } catch (error: any) {
-        if (error.response?.status === 401) {
-          setShowTokenExpiredModal(true);
+        // If JWT parsing fails, try API call as fallback
+        try {
+          await api.get("/auth/profile");
+        } catch (apiError: any) {
+          // If API call also fails, show modal
+          if (apiError.response?.status === 401) {
+            setShowTokenExpiredModal(true);
+          }
         }
       }
     };
 
-    // Check every 30 seconds
-    const interval = setInterval(checkTokenExpiration, 30000);
+    // Check every 5 minutes instead of 30 seconds to reduce load
+    const interval = setInterval(checkTokenExpiration, 300000);
 
-    return () => clearInterval(interval);
+    // Pause checking when page becomes hidden, resume when visible
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Resume checking when page becomes visible
+        checkTokenExpiration();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [user, showTokenExpiredModal]);
 
   // Hide modal when user is not authenticated

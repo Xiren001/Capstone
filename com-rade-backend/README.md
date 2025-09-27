@@ -243,3 +243,20 @@ This project is part of the Comrade military communication platform.
 
 **Last Updated**: January 22, 2025  
 **Version**: 1.0.0
+
+// CORS configuration - environment aware
+const corsOptions = {
+origin:
+process.env.NODE_ENV === "production"
+? [
+process.env.FRONTEND_URL || "https://yourdomain.com",
+process.env.ADMIN_URL || "https://admin.yourdomain.com",
+]
+: "\*", // Allow all origins in development
+methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+allowedHeaders: ["Content-Type", "Authorization"],
+credentials: true,
+optionsSuccessStatus: 200, // For legacy browser support
+};
+
+app.use(cors(corsOptions));
