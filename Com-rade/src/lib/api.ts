@@ -56,9 +56,17 @@ api.interceptors.response.use(
         }
       } catch (refreshError) {
         // Refresh failed, emit event for AuthContext to handle
+        const hadTokens =
+          localStorage.getItem("accessToken") ||
+          localStorage.getItem("refreshToken");
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        eventEmitter.emit(EVENTS.TOKEN_EXPIRED);
+
+        // Only emit token expired event if there were tokens to begin with
+        if (hadTokens) {
+          eventEmitter.emit(EVENTS.TOKEN_EXPIRED);
+        }
+
         return Promise.reject(refreshError);
       }
     }

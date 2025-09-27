@@ -54,39 +54,45 @@ export function AdminLoginForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden p-0 shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
-        <CardHeader className="text-center pb-4">
-          <div className="flex items-center justify-center mb-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <Shield className="h-8 w-8 text-primary" />
+    <div
+      className={cn("flex flex-col gap-6 max-w-md mx-auto", className)}
+      {...props}
+    >
+      <Card className="overflow-hidden shadow-lg border bg-card">
+        <CardHeader className="text-center pb-6">
+          <div className="flex items-center justify-center mb-6">
+            <div className="p-4 rounded-full bg-primary/10 ring-4 ring-primary/5">
+              <Shield className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">
+          <CardTitle className="text-3xl font-bold text-foreground mb-2">
             Admin Access
           </CardTitle>
-          <p className="text-muted-foreground text-sm mt-2">
+          <p className="text-muted-foreground text-base">
             Secure access to Comrade Admin Dashboard
           </p>
-          <Badge variant="outline" className="mt-3 w-fit mx-auto">
+          <Badge variant="secondary" className="mt-4 w-fit mx-auto px-3 py-1">
             <Shield className="h-3 w-3 mr-1" />
             Secure Login
           </Badge>
         </CardHeader>
 
-        <CardContent className="px-6 pb-6">
+        <CardContent className="px-8 pb-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Message */}
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+              <div className="flex items-center gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                <span>{error}</span>
+                <span className="font-medium">{error}</span>
               </div>
             )}
 
             {/* Username Field */}
-            <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-medium">
+            <div className="space-y-3">
+              <Label
+                htmlFor="username"
+                className="text-sm font-semibold text-foreground"
+              >
                 Username
               </Label>
               <div className="relative">
@@ -98,18 +104,21 @@ export function AdminLoginForm({
                   value={formData.username}
                   onChange={handleInputChange}
                   required
-                  className="pl-4 pr-4 h-11"
+                  className="h-12 px-4 text-base border-2 focus:border-primary transition-colors"
                   disabled={isLoading}
                 />
                 {formData.username && (
-                  <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
+                  <CheckCircle className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
                 )}
               </div>
             </div>
 
             {/* Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
+            <div className="space-y-3">
+              <Label
+                htmlFor="password"
+                className="text-sm font-semibold text-foreground"
+              >
                 Password
               </Label>
               <div className="relative">
@@ -121,51 +130,51 @@ export function AdminLoginForm({
                   value={formData.password}
                   onChange={handleInputChange}
                   required
-                  className="pl-4 pr-12 h-11"
+                  className="h-12 px-4 pr-12 text-base border-2 focus:border-primary transition-colors"
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff className="h-5 w-5" />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-5 w-5" />
                   )}
                 </button>
               </div>
             </div>
 
             {/* Forgot Password */}
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-2">
               <button
                 type="button"
-                className="text-sm text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors"
+                className="text-sm text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors font-medium"
                 disabled={isLoading}
               >
                 Forgot your password?
               </button>
             </div>
 
-            <Separator />
+            <Separator className="my-6" />
 
             {/* Login Button */}
             <Button
               type="submit"
-              className="w-full h-11 text-sm font-medium"
+              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 transition-colors"
               disabled={isLoading || !formData.username || !formData.password}
             >
               {isLoading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3" />
                   Authenticating...
                 </>
               ) : (
                 <>
-                  <Shield className="h-4 w-4 mr-2" />
+                  <Shield className="h-5 w-5 mr-3" />
                   Access Dashboard
                 </>
               )}
@@ -175,20 +184,25 @@ export function AdminLoginForm({
       </Card>
 
       {/* Footer */}
-      <div className="text-center">
-        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mb-2">
-          <Shield className="h-3 w-3" />
-          <span>Secure Connection</span>
-          <Separator orientation="vertical" className="h-3" />
-          <span>SSL Encrypted</span>
+      <div className="text-center space-y-3">
+        <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-green-500" />
+            <span className="font-medium">Secure Connection</span>
+          </div>
+          <Separator orientation="vertical" className="h-4" />
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+            <span className="font-medium">SSL Encrypted</span>
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground leading-relaxed">
           By accessing this system, you agree to our{" "}
-          <a href="#" className="text-primary hover:underline">
+          <a href="#" className="text-primary hover:underline font-medium">
             Terms of Service
           </a>{" "}
           and{" "}
-          <a href="#" className="text-primary hover:underline">
+          <a href="#" className="text-primary hover:underline font-medium">
             Privacy Policy
           </a>
           .

@@ -13,11 +13,8 @@ import {
   IconBell,
   IconSearch,
   IconUser,
-  IconDatabase,
-  IconUserCheck,
 } from "@tabler/icons-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -34,53 +31,43 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { LogoutModal } from "@/components/LogoutModal";
 
 const menuItems = [
   {
     title: "Dashboard",
     icon: IconDashboard,
-    url: "/admin/dashboard",
+    url: "/dashboard",
     isActive: true,
   },
   {
-    title: "User Management",
-    icon: IconUserCheck,
-    url: "/admin/users",
+    title: "Users",
+    icon: IconUser,
+    url: "/dashboard/users",
   },
   {
     title: "Analytics",
     icon: IconChartBar,
-    url: "/admin/analytics",
+    url: "/dashboard/analytics",
   },
   {
     title: "Reports",
     icon: IconFileText,
-    url: "/admin/reports",
+    url: "/dashboard/reports",
   },
   {
-    title: "Database",
-    icon: IconDatabase,
-    url: "/admin/database",
+    title: "Security",
+    icon: IconShield,
+    url: "/dashboard/security",
   },
   {
     title: "Settings",
     icon: IconSettings,
-    url: "/admin/settings",
+    url: "/dashboard/settings",
   },
 ];
 
-export const AdminDashboard: React.FC = () => {
+export const SidebarDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -106,9 +93,9 @@ export const AdminDashboard: React.FC = () => {
               <IconShield className="size-4" />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Comrade Admin</span>
+              <span className="truncate font-semibold">Comrade</span>
               <span className="truncate text-xs text-muted-foreground">
-                Admin Platform
+                Military Platform
               </span>
             </div>
           </div>
@@ -116,7 +103,7 @@ export const AdminDashboard: React.FC = () => {
 
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Administration</SidebarGroupLabel>
+            <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {menuItems.map((item) => (
@@ -138,39 +125,10 @@ export const AdminDashboard: React.FC = () => {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton>
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src="" alt={user?.username} />
-                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                        {user?.username?.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{user?.username}</span>
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <IconUser className="mr-2 h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <IconSettings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogoutClick}
-                    className="text-red-600"
-                  >
-                    <IconLogout className="mr-2 h-4 w-4" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <SidebarMenuButton onClick={handleLogoutClick}>
+                <IconLogout />
+                <span>Logout</span>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
@@ -183,28 +141,18 @@ export const AdminDashboard: React.FC = () => {
             <IconSearch className="h-4 w-4 text-muted-foreground" />
             <input
               type="search"
-              placeholder="Search admin panel..."
+              placeholder="Search..."
               className="flex h-8 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:w-[100px] lg:w-[300px]"
             />
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon">
               <IconBell className="h-4 w-4" />
-              <Badge
-                variant="destructive"
-                className="absolute -top-1 -right-1 h-5 w-5 text-xs p-0 flex items-center justify-center"
-              >
-                3
-              </Badge>
             </Button>
-            <Separator orientation="vertical" className="h-6" />
             <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="" alt={user?.username} />
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  {user?.username?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <IconUser className="size-4" />
+              </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user?.username}</span>
                 <span className="truncate text-xs text-muted-foreground">
@@ -216,7 +164,18 @@ export const AdminDashboard: React.FC = () => {
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-4">
-          {/* Dashboard content will be added here */}
+          {/* Empty Dashboard Content */}
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <IconDashboard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h2 className="text-2xl font-semibold text-muted-foreground mb-2">
+                Dashboard
+              </h2>
+              <p className="text-muted-foreground">
+                Welcome to your dashboard. Content will be added here.
+              </p>
+            </div>
+          </div>
         </div>
       </SidebarInset>
 

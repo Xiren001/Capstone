@@ -13,14 +13,16 @@ import { AlertTriangle, RefreshCw } from "lucide-react";
 interface TokenExpiredModalProps {
   isOpen: boolean;
   onLogin: () => void;
+  onClose: () => void;
 }
 
 export const TokenExpiredModal: React.FC<TokenExpiredModalProps> = ({
   isOpen,
   onLogin,
+  onClose,
 }) => {
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3">

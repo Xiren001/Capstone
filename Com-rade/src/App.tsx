@@ -15,7 +15,7 @@ import AboutUs from "./LandingPage/pages/about-us.tsx";
 import Login from "./LandingPage/pages/login.tsx";
 import { AuthProvider } from "./contexts/AuthContext.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
-import { SidebarDashboard } from "./components/SidebarDashboard.tsx";
+import { SidebarDashboard } from "./Dashboard";
 
 function App() {
   return (
